@@ -4,7 +4,7 @@
 <!--- Do not make this image location relative, README.md in root is a symbolic reference to one in docs. See CreateReadMeSymLink.cmd for more information. --->
 <img align="right" src="assets/sttp.png">
 
- [![docs](assets/doc-badge.png)](https://sttp.github.io/rustapi)
+ [![docs](assets/doc-badge.svg)](https://sttp.github.io/rustapi)
 
 The Streaming Telemetry Transport Protocol (STTP) is optimized for the demands of transporting high volume streaming data. The protocol allows for the transmission of any information that can be represented longitudinally, e.g., time-series data.
 
