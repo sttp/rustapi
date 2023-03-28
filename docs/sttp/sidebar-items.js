@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":[["data",""],["transport",""]],"struct":[["Config","Config defines the STTP connection related configuration parameters."],["Settings","Defines STTP subscription related settings."],["Subscriber","Represents an STTP data subscriber."]]};

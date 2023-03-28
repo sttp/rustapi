@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"struct":[["SignalIndexCache","Represents a mapping of 32-bit runtime IDs to 128-bit globally unique measurement IDs. The class additionally provides reverse lookup and an extra mapping to human-readable measurement keys."]]};
