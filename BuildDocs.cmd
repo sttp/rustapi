@@ -2,8 +2,8 @@
 
 echo Generating docs...
 cargo doc --no-deps
-echo "<meta http-equiv=\"refresh\" content=\"0; url=sttp\">" > target\doc\index.html
-echo "" > target\doc\.nojekyll
+echo ^<meta http-equiv=^"refresh^" content=^"0; url=sttp^"^> > target\doc\index.html
+echo. 2> target\doc\.nojekyll
 
 echo Copying docs...
 rmdir /s /q docs
