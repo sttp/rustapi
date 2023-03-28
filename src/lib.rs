@@ -31,11 +31,15 @@
 //! The protocol allows for the transmission of any information that can be
 //! represented longitudinally, e.g., time-series data.
 
+// Expose local modules as public passthroughs of STTP module
 mod config;
-pub use crate::config::Config; // Expose Config as part of STTP module
+pub use crate::config::Config;
 
 mod settings;
-pub use crate::settings::Settings; // Expose Settings as part of STTP module
+pub use crate::settings::Settings;
+
+mod ticks;
+pub use crate::ticks::Ticks;
 
 pub mod data;
 

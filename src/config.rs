@@ -72,10 +72,6 @@ pub struct Config {
 
     /// Defines the target STTP protocol version. This currently defaults to 2.
     pub version: u8,
-
-    /// Determines if Guid wire serialization should use RFC encoding.
-    /// This defaults to true.
-    pub rfc_guid_encoding: bool,
 }
 
 /// Define the default values for an STTP connection Config.
@@ -93,7 +89,6 @@ impl Default for Config {
             compress_signal_index_cache: true,
             metadata_filters: "".to_string(),
             version: 2,
-            rfc_guid_encoding: true,
         }
     }
 }
