@@ -25,6 +25,8 @@
 //!
 //! Rust API for the Streaming Telemetry Transport Protocol ([STTP](https://github.com/sttp) / [IEEE 2664](https://standards.ieee.org/ieee/2664/7397/))
 //!
+//! View on GitHub: [sttp/rustapi](https://github.com/sttp/rustapi)
+//!
 //! STTP is optimized for the demands of transporting high volume streaming data.
 //! The protocol allows for the transmission of any information that can be
 //! represented longitudinally, e.g., time-series data.
