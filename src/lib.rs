@@ -21,7 +21,7 @@
 //
 //******************************************************************************************************
 
-//! Rust API for the Streaming Telemetry Transport Protocol (STTP / IEEE 2664)
+//! Rust API for the Streaming Telemetry Transport Protocol ([STTP](https://github.com/sttp) / [IEEE 2664](https://standards.ieee.org/ieee/2664/7397/))
 
 mod config;
 pub use crate::config::Config; // Expose Config as part of STTP module
