@@ -21,7 +21,13 @@
 //
 //******************************************************************************************************
 
+//! <img align="right" src="https://raw.githubusercontent.com/sttp/rustapi/main/assets/sttp.png">
+//!
 //! Rust API for the Streaming Telemetry Transport Protocol ([STTP](https://github.com/sttp) / [IEEE 2664](https://standards.ieee.org/ieee/2664/7397/))
+//!
+//! STTP is optimized for the demands of transporting high volume streaming data.
+//! The protocol allows for the transmission of any information that can be
+//! represented longitudinally, e.g., time-series data.
 
 mod config;
 pub use crate::config::Config; // Expose Config as part of STTP module
