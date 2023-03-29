@@ -70,6 +70,12 @@ impl Ticks {
     /// `Ticks` representation of the Unix epoch timestamp starting at January 1, 1970.
     pub const UNIX_BASE_OFFSET: u64 = 621_355_968_000_000_000;
 
+    /// Gets the timestamp portion of the `Ticks` value, i.e.,
+    /// the 62-bit time value excluding any leap second flags.
+    pub fn timestamp_value(&self) -> u64 {
+        self.val & Self::VALUE_MASK
+    }
+
     /// Converts a standard Rust `DateTime` value to a `Ticks` value.
     pub fn from_datetime<Tz: TimeZone>(dt: DateTime<Tz>) -> Self
     where
@@ -94,7 +100,7 @@ impl Ticks {
 
     /// Converts a `Ticks` value to standard Rust `DateTime` value.
     pub fn to_datetime(&self) -> DateTime<Utc> {
-        let value = (self.val & Self::VALUE_MASK) - Self::UNIX_BASE_OFFSET;
+        let value = self.timestamp_value() - Self::UNIX_BASE_OFFSET;
         let secs = value / Self::PER_SECOND;
         let nanos = (value % Self::PER_SECOND) * 100;
         let duration = Duration::new(secs, nanos as u32);

@@ -43,7 +43,13 @@ pub struct Measurement {
 }
 
 impl Measurement {
-    /// Gets a `Measurement` `Ticks` based timestamp as a standard Rust `DateTime` value.
+    /// Gets the integer-based time from a `Measurement` ticks-based timestamp, i.e.,
+    /// the 62-bit time value excluding any leap-second flags.
+    pub fn timestamp_value(&self) -> u64 {
+        self.timestamp.timestamp_value()
+    }
+
+    /// Gets `Measurement` ticks-based timestamp as a standard Rust `DateTime` value.
     pub fn datetime(&self) -> DateTime<Utc> {
         self.timestamp.to_datetime()
     }
