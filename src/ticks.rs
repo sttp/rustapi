@@ -148,7 +148,8 @@ impl Ticks {
     /// Shows just the timestamp portion of a `Ticks` value with milliseconds, e.g., 15:04:05.999.
     pub fn to_short_string(ticks: Self) -> String {
         let datetime_str = Self::to_string(ticks);
-        datetime_str.split(" ").nth(1).unwrap_or("").to_string()
+        let result = datetime_str.split(" ").nth(1).unwrap_or("").to_string();
+        result[..result.len() - 6].to_string()
     }
 }
 
@@ -275,9 +276,6 @@ mod tests {
         let ticks = *TEST_TICKS;
         let string_representation = Ticks::to_string(ticks);
 
-        println!("{}", string_representation);
-        println!("{}", *TEST_DATETIME_VAL);
-
         assert_eq!(string_representation, *TEST_DATETIME_VAL);
     }
 
@@ -286,6 +284,6 @@ mod tests {
         let ticks = *TEST_TICKS;
         let short_string_representation = Ticks::to_short_string(ticks);
 
-        assert_eq!(short_string_representation, "14:46:39.339127800");
+        assert_eq!(short_string_representation, "14:46:39.339");
     }
 }
