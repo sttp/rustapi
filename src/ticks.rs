@@ -137,7 +137,10 @@ impl Ticks {
 
     /// Standard timestamp representation for a `Ticks` value, e.g., 2006-01-02 15:04:05.999999999.
     pub fn to_string(ticks: Self) -> String {
-        Self::to_datetime(ticks).to_rfc3339_opts(chrono::SecondsFormat::Micros, true)
+        let result = Self::to_datetime(ticks)
+            .to_rfc3339_opts(chrono::SecondsFormat::Nanos, true)
+            .replace("T", " ");
+        result[..result.len() - 1].to_string()
     }
 
     /// Shows just the timestamp portion of a `Ticks` value with milliseconds, e.g., 15:04:05.999.
@@ -190,5 +193,97 @@ impl Div for Ticks {
         Ticks {
             val: self.val / rhs.val,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Ticks;
+    use chrono::{DateTime, TimeZone, Timelike, Utc};
+    use lazy_static::lazy_static;
+
+    const TEST_TICK_VAL: u64 = 637669683993391278;
+
+    lazy_static! {
+        static ref TEST_DATETIME: DateTime<Utc> = init_test_datetime();
+        static ref TEST_TICKS: Ticks = Ticks { val: TEST_TICK_VAL };
+        static ref TEST_DATETIME_VAL: String = "2021-09-11 14:46:39.339127800".to_string();
+    }
+
+    fn init_test_datetime() -> DateTime<Utc> {
+        Utc.with_ymd_and_hms(2021, 9, 11, 14, 46, 39)
+            .unwrap()
+            .with_nanosecond(339127800)
+            .unwrap()
+    }
+
+    #[test]
+    fn test_ticks_from_datetime() {
+        let ticks = Ticks::from_datetime(*TEST_DATETIME);
+
+        assert_eq!(ticks.val, TEST_TICK_VAL);
+    }
+
+    #[test]
+    fn test_ticks_to_datetime() {
+        let dt = Ticks::to_datetime(*TEST_TICKS);
+
+        assert_eq!(dt, *TEST_DATETIME);
+    }
+
+    #[test]
+    fn test_ticks_is_leap_second() {
+        let ticks = *TEST_TICKS;
+        let leap_second_ticks = Ticks::set_leap_second(ticks);
+
+        assert!(!Ticks::is_leap_second(ticks));
+        assert!(Ticks::is_leap_second(leap_second_ticks));
+    }
+
+    #[test]
+    fn test_ticks_set_leap_second() {
+        let ticks = *TEST_TICKS;
+        let leap_second_ticks = Ticks::set_leap_second(ticks);
+
+        assert_eq!(leap_second_ticks.val, ticks.val | Ticks::LEAP_SECOND_FLAG);
+    }
+
+    #[test]
+    fn test_ticks_is_negative_leap_second() {
+        let ticks = *TEST_TICKS;
+        let negative_leap_second_ticks = Ticks::set_negative_leap_second(ticks);
+
+        assert!(!Ticks::is_negative_leap_second(ticks));
+        assert!(Ticks::is_negative_leap_second(negative_leap_second_ticks));
+    }
+
+    #[test]
+    fn test_ticks_set_negative_leap_second() {
+        let ticks = *TEST_TICKS;
+        let negative_leap_second_ticks = Ticks::set_negative_leap_second(ticks);
+
+        assert_eq!(
+            negative_leap_second_ticks.val,
+            ticks.val | Ticks::LEAP_SECOND_FLAG | Ticks::LEAP_SECOND_DIRECTION
+        );
+    }
+
+    #[test]
+    fn test_ticks_to_string() {
+        let ticks = *TEST_TICKS;
+        let string_representation = Ticks::to_string(ticks);
+
+        println!("{}", string_representation);
+        println!("{}", *TEST_DATETIME_VAL);
+
+        assert_eq!(string_representation, *TEST_DATETIME_VAL);
+    }
+
+    #[test]
+    fn test_ticks_to_short_string() {
+        let ticks = *TEST_TICKS;
+        let short_string_representation = Ticks::to_short_string(ticks);
+
+        assert_eq!(short_string_representation, "14:46:39.339127800");
     }
 }
