@@ -21,40 +21,72 @@
 //
 //******************************************************************************************************
 
-//! <img align="right" src="https://raw.githubusercontent.com/sttp/rustapi/main/assets/sttp.png">
-//!
-//! Rust API for the Streaming Telemetry Transport Protocol ([STTP](https://github.com/sttp) / [IEEE 2664](https://standards.ieee.org/ieee/2664/7397/))
-//!
-//! View on GitHub: [sttp/rustapi](https://github.com/sttp/rustapi)
-//!
-//! STTP is optimized for the demands of transporting high volume streaming data.
-//! The protocol allows for the transmission of any information that can be
-//! represented longitudinally, e.g., time-series data.
+#![doc = include_str!("../README.md")]
+#![deny(
+    dead_code,
+    arithmetic_overflow,
+    invalid_type_param_default,
+    missing_fragment_specifier,
+    mutable_transmutes,
+    no_mangle_const_items,
+    overflowing_literals,
+    patterns_in_fns_without_body,
+    pub_use_of_private_extern_crate,
+    unknown_crate_types,
+    order_dependent_trait_objects,
+    illegal_floating_point_literal_pattern,
+    improper_ctypes,
+    late_bound_lifetime_arguments,
+    non_camel_case_types,
+    non_shorthand_field_patterns,
+    non_snake_case,
+    non_upper_case_globals,
+    no_mangle_generic_items,
+    private_in_public,
+    stable_features,
+    type_alias_bounds,
+    tyvar_behind_raw_pointer,
+    unconditional_recursion,
+    unused_comparisons,
+    unreachable_pub,
+    anonymous_parameters,
+    missing_copy_implementations,
+    //missing_debug_implementations,
+    missing_docs,
+    trivial_casts,
+    trivial_numeric_casts,
+    unused_import_braces,
+    unused_qualifications,
+    clippy::all
+    )]
+#![forbid(
+    unsafe_code,
+    rustdoc::broken_intra_doc_links,
+    while_true,
+    bare_trait_objects
+)]
+#![cfg_attr(test, allow(dead_code))]
 
-// Expose local modules as public passthroughs of STTP module
+// Expose local submodules as public passthroughs of sttp module
+// for better organization and ease of use of public API
+
 mod config;
-pub use crate::config::Config;
+pub use crate::config::Config; // >> sttp::Config
 
 mod settings;
-pub use crate::settings::Settings;
+pub use crate::settings::Settings; // >> sttp::Settings
 
 mod ticks;
-pub use crate::ticks::Ticks;
+pub use crate::ticks::Ticks; // >> sttp::Ticks
 
+/// Represents data functionality of the STTP library.
 pub mod data;
 
+/// Represents transport functionality of the STTP library.
 pub mod transport;
 
-// pub fn test() -> bool {
-//     let mut c: Config = Config::default();
-
-//     c.metadata_filters = "".to_string();
-
-//     return true;
-// }
-
-use std::sync::Arc;
-use std::time::SystemTime;
+// use std::sync::Arc;
+// use std::time::SystemTime;
 
 /// Represents an STTP data subscriber.
 ///
@@ -62,19 +94,20 @@ use std::time::SystemTime;
 /// in the transport module. The `Subscriber` is intended to simplify common uses of
 /// STTP data reception and maintains an internal instance of the `DataSubscriber` for
 /// subscription based functionality.
+#[derive(Clone, Copy)]
 pub struct Subscriber {
-    // Configuration reference
-    config: Arc<Config>,
+    // // Configuration reference
+    // config: Arc<Config>,
 
-    // DataSubscriber reference
-    //ds: Arc<transport::DataSubscriber>,
+    // // DataSubscriber reference
+    // //ds: Arc<transport::DataSubscriber>,
 
-    // Callback references
-    status_message_logger: Option<Box<dyn Fn(String) + Send + Sync>>,
-    error_message_logger: Option<Box<dyn Fn(String) + Send + Sync>>,
-    //metadata_receiver: Option<Box<dyn Fn(data::DataSet) + Send + Sync>>,
-    data_start_time_receiver: Option<Box<dyn Fn(SystemTime) + Send + Sync>>,
-    configuration_changed_receiver: Option<Box<dyn Fn() + Send + Sync>>,
-    historical_read_complete_receiver: Option<Box<dyn Fn() + Send + Sync>>,
-    connection_established_receiver: Option<Box<dyn Fn() + Send + Sync>>,
+    // // Callback references
+    // status_message_logger: Option<Box<dyn Fn(String) + Send + Sync>>,
+    // error_message_logger: Option<Box<dyn Fn(String) + Send + Sync>>,
+    // //metadata_receiver: Option<Box<dyn Fn(data::DataSet) + Send + Sync>>,
+    // data_start_time_receiver: Option<Box<dyn Fn(SystemTime) + Send + Sync>>,
+    // configuration_changed_receiver: Option<Box<dyn Fn() + Send + Sync>>,
+    // historical__complete_receiver: Option<Box<dyn Fn() + Send + Sync>>,
+    // connection_established_receiver: Option<Box<dyn Fn() + Send + Sync>>,
 }

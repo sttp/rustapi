@@ -93,8 +93,8 @@ impl Ticks {
     }
 
     /// Converts a `Ticks` value to standard Rust `DateTime` value.
-    pub fn to_datetime(ticks: Self) -> DateTime<Utc> {
-        let value = (ticks.val & Self::VALUE_MASK) - Self::UNIX_BASE_OFFSET;
+    pub fn to_datetime(&self) -> DateTime<Utc> {
+        let value = (self.val & Self::VALUE_MASK) - Self::UNIX_BASE_OFFSET;
         let secs = value / Self::PER_SECOND;
         let nanos = (value % Self::PER_SECOND) * 100;
         let duration = Duration::new(secs, nanos as u32);
@@ -102,27 +102,37 @@ impl Ticks {
     }
 
     /// Determines if the deserialized `Ticks` value represents a leap second, i.e., second 60.
-    pub fn is_leap_second(ticks: Self) -> bool {
-        (ticks.val & Self::LEAP_SECOND_FLAG) > 0
+    pub fn is_leap_second(&self) -> bool {
+        (self.val & Self::LEAP_SECOND_FLAG) > 0
     }
 
-    /// Flags a `Ticks` value to represent a leap second, i.e., second 60, before wire serialization.
-    pub fn set_leap_second(ticks: Self) -> Self {
+    /// Returns a copy of this `Ticks` value flagged to represent a leap second, i.e., second 60, before wire serialization.
+    pub fn set_leap_second(&self) -> Self {
         Self {
-            val: ticks.val | Self::LEAP_SECOND_FLAG,
+            val: self.val | Self::LEAP_SECOND_FLAG,
         }
+    }
+
+    /// Updates this `Ticks` value to represent a leap second, i.e., second 60, before wire serialization.
+    pub fn apply_leap_second(&mut self) {
+        self.val |= Self::LEAP_SECOND_FLAG;
     }
 
     /// Determines if the deserialized `Ticks` value represents a negative leap second, i.e., checks flag on second 58 to see if second 59 will be missing.
-    pub fn is_negative_leap_second(ticks: Self) -> bool {
-        Self::is_leap_second(ticks) && (ticks.val & Self::LEAP_SECOND_DIRECTION) > 0
+    pub fn is_negative_leap_second(&self) -> bool {
+        self.is_leap_second() && (self.val & Self::LEAP_SECOND_DIRECTION) > 0
     }
 
-    /// Flags a `Ticks` value to represent a negative leap second, i.e., sets flag on second 58 to mark that second 59 will be missing, before wire serialization.
-    pub fn set_negative_leap_second(ticks: Self) -> Self {
+    /// Returns a copy of this `Ticks` value flagged to represent a negative leap second, i.e., sets flag on second 58 to mark that second 59 will be missing, before wire serialization.
+    pub fn set_negative_leap_second(&self) -> Self {
         Self {
-            val: ticks.val | Self::LEAP_SECOND_FLAG | Self::LEAP_SECOND_DIRECTION,
+            val: self.val | Self::LEAP_SECOND_FLAG | Self::LEAP_SECOND_DIRECTION,
         }
+    }
+
+    /// Updates this `Ticks` value to represent a negative leap second, i.e., sets flag on second 58 to mark that second 59 will be missing, before wire serialization.
+    pub fn apply_negative_leap_second(&mut self) {
+        self.val |= Self::LEAP_SECOND_FLAG | Self::LEAP_SECOND_DIRECTION;
     }
 
     /// Gets the current local time as a `Ticks` value.
@@ -138,16 +148,17 @@ impl Ticks {
     }
 
     /// Standard timestamp representation for a `Ticks` value, e.g., 2006-01-02 15:04:05.999999999.
-    pub fn to_string(ticks: Self) -> String {
-        let result = Self::to_datetime(ticks)
+    pub fn to_string(&self) -> String {
+        let result = self
+            .to_datetime()
             .to_rfc3339_opts(chrono::SecondsFormat::Nanos, true)
             .replace("T", " ");
         result[..result.len() - 1].to_string()
     }
 
     /// Shows just the timestamp portion of a `Ticks` value with milliseconds, e.g., 15:04:05.999.
-    pub fn to_short_string(ticks: Self) -> String {
-        let datetime_str = Self::to_string(ticks);
+    pub fn to_short_string(&self) -> String {
+        let datetime_str = self.to_string();
         let result = datetime_str.split(" ").nth(1).unwrap_or("").to_string();
         result[..result.len() - 6].to_string()
     }
@@ -155,7 +166,7 @@ impl Ticks {
 
 impl Display for Ticks {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
-        write!(f, "{}", Self::to_string(*self))
+        write!(f, "{}", self.to_string())
     }
 }
 
@@ -229,7 +240,7 @@ mod tests {
 
     #[test]
     fn test_ticks_to_datetime() {
-        let dt = Ticks::to_datetime(*TEST_TICKS);
+        let dt = TEST_TICKS.to_datetime();
 
         assert_eq!(dt, *TEST_DATETIME);
     }
@@ -237,16 +248,16 @@ mod tests {
     #[test]
     fn test_ticks_is_leap_second() {
         let ticks = *TEST_TICKS;
-        let leap_second_ticks = Ticks::set_leap_second(ticks);
+        let leap_second_ticks = ticks.set_leap_second();
 
-        assert!(!Ticks::is_leap_second(ticks));
-        assert!(Ticks::is_leap_second(leap_second_ticks));
+        assert!(!ticks.is_leap_second());
+        assert!(leap_second_ticks.is_leap_second());
     }
 
     #[test]
     fn test_ticks_set_leap_second() {
         let ticks = *TEST_TICKS;
-        let leap_second_ticks = Ticks::set_leap_second(ticks);
+        let leap_second_ticks = ticks.set_leap_second();
 
         assert_eq!(leap_second_ticks.val, ticks.val | Ticks::LEAP_SECOND_FLAG);
     }
@@ -254,16 +265,16 @@ mod tests {
     #[test]
     fn test_ticks_is_negative_leap_second() {
         let ticks = *TEST_TICKS;
-        let negative_leap_second_ticks = Ticks::set_negative_leap_second(ticks);
+        let negative_leap_second_ticks = ticks.set_negative_leap_second();
 
-        assert!(!Ticks::is_negative_leap_second(ticks));
-        assert!(Ticks::is_negative_leap_second(negative_leap_second_ticks));
+        assert!(!ticks.is_negative_leap_second());
+        assert!(negative_leap_second_ticks.is_negative_leap_second());
     }
 
     #[test]
     fn test_ticks_set_negative_leap_second() {
         let ticks = *TEST_TICKS;
-        let negative_leap_second_ticks = Ticks::set_negative_leap_second(ticks);
+        let negative_leap_second_ticks = ticks.set_negative_leap_second();
 
         assert_eq!(
             negative_leap_second_ticks.val,
@@ -274,7 +285,7 @@ mod tests {
     #[test]
     fn test_ticks_to_string() {
         let ticks = *TEST_TICKS;
-        let string_representation = Ticks::to_string(ticks);
+        let string_representation = ticks.to_string();
 
         assert_eq!(string_representation, *TEST_DATETIME_VAL);
     }
@@ -282,7 +293,7 @@ mod tests {
     #[test]
     fn test_ticks_to_short_string() {
         let ticks = *TEST_TICKS;
-        let short_string_representation = Ticks::to_short_string(ticks);
+        let short_string_representation = ticks.to_short_string();
 
         assert_eq!(short_string_representation, "14:46:39.339");
     }

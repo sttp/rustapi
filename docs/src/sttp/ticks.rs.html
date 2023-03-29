@@ -287,6 +287,17 @@
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
 <a href="#289" id="289">289</a>
+<a href="#290" id="290">290</a>
+<a href="#291" id="291">291</a>
+<a href="#292" id="292">292</a>
+<a href="#293" id="293">293</a>
+<a href="#294" id="294">294</a>
+<a href="#295" id="295">295</a>
+<a href="#296" id="296">296</a>
+<a href="#297" id="297">297</a>
+<a href="#298" id="298">298</a>
+<a href="#299" id="299">299</a>
+<a href="#300" id="300">300</a>
 </pre><pre class="rust"><code><span class="comment">//******************************************************************************************************
 //  ticks.rs - Gbtc
 //
@@ -382,8 +393,8 @@
     }
 
     <span class="doccomment">/// Converts a `Ticks` value to standard Rust `DateTime` value.
-    </span><span class="kw">pub fn </span>to_datetime(ticks: <span class="self">Self</span>) -&gt; DateTime&lt;Utc&gt; {
-        <span class="kw">let </span>value = (ticks.val &amp; <span class="self">Self</span>::VALUE_MASK) - <span class="self">Self</span>::UNIX_BASE_OFFSET;
+    </span><span class="kw">pub fn </span>to_datetime(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; DateTime&lt;Utc&gt; {
+        <span class="kw">let </span>value = (<span class="self">self</span>.val &amp; <span class="self">Self</span>::VALUE_MASK) - <span class="self">Self</span>::UNIX_BASE_OFFSET;
         <span class="kw">let </span>secs = value / <span class="self">Self</span>::PER_SECOND;
         <span class="kw">let </span>nanos = (value % <span class="self">Self</span>::PER_SECOND) * <span class="number">100</span>;
         <span class="kw">let </span>duration = Duration::new(secs, nanos <span class="kw">as </span>u32);
@@ -391,27 +402,37 @@
     }
 
     <span class="doccomment">/// Determines if the deserialized `Ticks` value represents a leap second, i.e., second 60.
-    </span><span class="kw">pub fn </span>is_leap_second(ticks: <span class="self">Self</span>) -&gt; bool {
-        (ticks.val &amp; <span class="self">Self</span>::LEAP_SECOND_FLAG) &gt; <span class="number">0
+    </span><span class="kw">pub fn </span>is_leap_second(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        (<span class="self">self</span>.val &amp; <span class="self">Self</span>::LEAP_SECOND_FLAG) &gt; <span class="number">0
     </span>}
 
-    <span class="doccomment">/// Flags a `Ticks` value to represent a leap second, i.e., second 60, before wire serialization.
-    </span><span class="kw">pub fn </span>set_leap_second(ticks: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Returns a copy of this `Ticks` value flagged to represent a leap second, i.e., second 60, before wire serialization.
+    </span><span class="kw">pub fn </span>set_leap_second(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            val: ticks.val | <span class="self">Self</span>::LEAP_SECOND_FLAG,
+            val: <span class="self">self</span>.val | <span class="self">Self</span>::LEAP_SECOND_FLAG,
         }
     }
 
+    <span class="doccomment">/// Updates this `Ticks` value to represent a leap second, i.e., second 60, before wire serialization.
+    </span><span class="kw">pub fn </span>apply_leap_second(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.val |= <span class="self">Self</span>::LEAP_SECOND_FLAG;
+    }
+
     <span class="doccomment">/// Determines if the deserialized `Ticks` value represents a negative leap second, i.e., checks flag on second 58 to see if second 59 will be missing.
-    </span><span class="kw">pub fn </span>is_negative_leap_second(ticks: <span class="self">Self</span>) -&gt; bool {
-        <span class="self">Self</span>::is_leap_second(ticks) &amp;&amp; (ticks.val &amp; <span class="self">Self</span>::LEAP_SECOND_DIRECTION) &gt; <span class="number">0
+    </span><span class="kw">pub fn </span>is_negative_leap_second(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.is_leap_second() &amp;&amp; (<span class="self">self</span>.val &amp; <span class="self">Self</span>::LEAP_SECOND_DIRECTION) &gt; <span class="number">0
     </span>}
 
-    <span class="doccomment">/// Flags a `Ticks` value to represent a negative leap second, i.e., sets flag on second 58 to mark that second 59 will be missing, before wire serialization.
-    </span><span class="kw">pub fn </span>set_negative_leap_second(ticks: <span class="self">Self</span>) -&gt; <span class="self">Self </span>{
+    <span class="doccomment">/// Returns a copy of this `Ticks` value flagged to represent a negative leap second, i.e., sets flag on second 58 to mark that second 59 will be missing, before wire serialization.
+    </span><span class="kw">pub fn </span>set_negative_leap_second(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
-            val: ticks.val | <span class="self">Self</span>::LEAP_SECOND_FLAG | <span class="self">Self</span>::LEAP_SECOND_DIRECTION,
+            val: <span class="self">self</span>.val | <span class="self">Self</span>::LEAP_SECOND_FLAG | <span class="self">Self</span>::LEAP_SECOND_DIRECTION,
         }
+    }
+
+    <span class="doccomment">/// Updates this `Ticks` value to represent a negative leap second, i.e., sets flag on second 58 to mark that second 59 will be missing, before wire serialization.
+    </span><span class="kw">pub fn </span>apply_negative_leap_second(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
+        <span class="self">self</span>.val |= <span class="self">Self</span>::LEAP_SECOND_FLAG | <span class="self">Self</span>::LEAP_SECOND_DIRECTION;
     }
 
     <span class="doccomment">/// Gets the current local time as a `Ticks` value.
@@ -427,16 +448,17 @@
     }
 
     <span class="doccomment">/// Standard timestamp representation for a `Ticks` value, e.g., 2006-01-02 15:04:05.999999999.
-    </span><span class="kw">pub fn </span>to_string(ticks: <span class="self">Self</span>) -&gt; String {
-        <span class="kw">let </span>result = <span class="self">Self</span>::to_datetime(ticks)
+    </span><span class="kw">pub fn </span>to_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">let </span>result = <span class="self">self
+            </span>.to_datetime()
             .to_rfc3339_opts(chrono::SecondsFormat::Nanos, <span class="bool-val">true</span>)
             .replace(<span class="string">&quot;T&quot;</span>, <span class="string">&quot; &quot;</span>);
         result[..result.len() - <span class="number">1</span>].to_string()
     }
 
     <span class="doccomment">/// Shows just the timestamp portion of a `Ticks` value with milliseconds, e.g., 15:04:05.999.
-    </span><span class="kw">pub fn </span>to_short_string(ticks: <span class="self">Self</span>) -&gt; String {
-        <span class="kw">let </span>datetime_str = <span class="self">Self</span>::to_string(ticks);
+    </span><span class="kw">pub fn </span>to_short_string(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; String {
+        <span class="kw">let </span>datetime_str = <span class="self">self</span>.to_string();
         <span class="kw">let </span>result = datetime_str.split(<span class="string">&quot; &quot;</span>).nth(<span class="number">1</span>).unwrap_or(<span class="string">&quot;&quot;</span>).to_string();
         result[..result.len() - <span class="number">6</span>].to_string()
     }
@@ -444,7 +466,7 @@
 
 <span class="kw">impl </span>Display <span class="kw">for </span>Ticks {
     <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; FmtResult {
-        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">Self</span>::to_string(<span class="kw-2">*</span><span class="self">self</span>))
+        <span class="macro">write!</span>(f, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.to_string())
     }
 }
 
@@ -518,7 +540,7 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ticks_to_datetime() {
-        <span class="kw">let </span>dt = Ticks::to_datetime(<span class="kw-2">*</span>TEST_TICKS);
+        <span class="kw">let </span>dt = TEST_TICKS.to_datetime();
 
         <span class="macro">assert_eq!</span>(dt, <span class="kw-2">*</span>TEST_DATETIME);
     }
@@ -526,16 +548,16 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ticks_is_leap_second() {
         <span class="kw">let </span>ticks = <span class="kw-2">*</span>TEST_TICKS;
-        <span class="kw">let </span>leap_second_ticks = Ticks::set_leap_second(ticks);
+        <span class="kw">let </span>leap_second_ticks = ticks.set_leap_second();
 
-        <span class="macro">assert!</span>(!Ticks::is_leap_second(ticks));
-        <span class="macro">assert!</span>(Ticks::is_leap_second(leap_second_ticks));
+        <span class="macro">assert!</span>(!ticks.is_leap_second());
+        <span class="macro">assert!</span>(leap_second_ticks.is_leap_second());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ticks_set_leap_second() {
         <span class="kw">let </span>ticks = <span class="kw-2">*</span>TEST_TICKS;
-        <span class="kw">let </span>leap_second_ticks = Ticks::set_leap_second(ticks);
+        <span class="kw">let </span>leap_second_ticks = ticks.set_leap_second();
 
         <span class="macro">assert_eq!</span>(leap_second_ticks.val, ticks.val | Ticks::LEAP_SECOND_FLAG);
     }
@@ -543,16 +565,16 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ticks_is_negative_leap_second() {
         <span class="kw">let </span>ticks = <span class="kw-2">*</span>TEST_TICKS;
-        <span class="kw">let </span>negative_leap_second_ticks = Ticks::set_negative_leap_second(ticks);
+        <span class="kw">let </span>negative_leap_second_ticks = ticks.set_negative_leap_second();
 
-        <span class="macro">assert!</span>(!Ticks::is_negative_leap_second(ticks));
-        <span class="macro">assert!</span>(Ticks::is_negative_leap_second(negative_leap_second_ticks));
+        <span class="macro">assert!</span>(!ticks.is_negative_leap_second());
+        <span class="macro">assert!</span>(negative_leap_second_ticks.is_negative_leap_second());
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ticks_set_negative_leap_second() {
         <span class="kw">let </span>ticks = <span class="kw-2">*</span>TEST_TICKS;
-        <span class="kw">let </span>negative_leap_second_ticks = Ticks::set_negative_leap_second(ticks);
+        <span class="kw">let </span>negative_leap_second_ticks = ticks.set_negative_leap_second();
 
         <span class="macro">assert_eq!</span>(
             negative_leap_second_ticks.val,
@@ -563,7 +585,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ticks_to_string() {
         <span class="kw">let </span>ticks = <span class="kw-2">*</span>TEST_TICKS;
-        <span class="kw">let </span>string_representation = Ticks::to_string(ticks);
+        <span class="kw">let </span>string_representation = ticks.to_string();
 
         <span class="macro">assert_eq!</span>(string_representation, <span class="kw-2">*</span>TEST_DATETIME_VAL);
     }
@@ -571,7 +593,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_ticks_to_short_string() {
         <span class="kw">let </span>ticks = <span class="kw-2">*</span>TEST_TICKS;
-        <span class="kw">let </span>short_string_representation = Ticks::to_short_string(ticks);
+        <span class="kw">let </span>short_string_representation = ticks.to_short_string();
 
         <span class="macro">assert_eq!</span>(short_string_representation, <span class="string">&quot;14:46:39.339&quot;</span>);
     }

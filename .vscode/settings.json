@@ -3,6 +3,7 @@
         "Gbtc",
         "nanos",
         "ndarray",
+        "repr",
         "Ritchie",
         "sttp"
     ]
