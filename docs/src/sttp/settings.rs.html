@@ -103,6 +103,14 @@
 <a href="#103" id="103">103</a>
 <a href="#104" id="104">104</a>
 <a href="#105" id="105">105</a>
+<a href="#106" id="106">106</a>
+<a href="#107" id="107">107</a>
+<a href="#108" id="108">108</a>
+<a href="#109" id="109">109</a>
+<a href="#110" id="110">110</a>
+<a href="#111" id="111">111</a>
+<a href="#112" id="112">112</a>
+<a href="#113" id="113">113</a>
 </pre><pre class="rust"><code><span class="comment">//******************************************************************************************************
 //  settings.rs - Gbtc
 //
@@ -145,44 +153,52 @@
     <span class="doccomment">/// Determines if time should be included in non-compressed, compact measurements.
     </span><span class="kw">pub </span>include_time: bool,
 
-    <span class="comment">// Determines if publisher should perform time reasonability checks.
-    // When enabled LagTime and LeadTime will be used to determine if a measurement timestamp is reasonable.
+    <span class="doccomment">/// Determines if publisher should perform time reasonability checks.
+    /// When enabled LagTime and LeadTime will be used to determine if a measurement timestamp is reasonable.
     </span><span class="kw">pub </span>enable_time_reasonability_check: bool,
-    <span class="comment">// Defines the allowed past time deviation tolerance in seconds (can be sub-second).
-    // Value is used to determine if a measurement timestamp is reasonable.
-    // Only applicable when EnableTimeReasonabilityCheck is true.
+
+    <span class="doccomment">/// Defines the allowed past time deviation tolerance in seconds (can be sub-second).
+    /// Value is used to determine if a measurement timestamp is reasonable.
+    /// Only applicable when EnableTimeReasonabilityCheck is true.
     </span><span class="kw">pub </span>lag_time: f64,
-    <span class="comment">// Defines the allowed future time deviation tolerance in seconds (can be sub-second).
-    // Value is used to determine if a measurement timestamp is reasonable.
-    // Only applicable when EnableTimeReasonabilityCheck is true.
+
+    <span class="doccomment">/// Defines the allowed future time deviation tolerance in seconds (can be sub-second).
+    /// Value is used to determine if a measurement timestamp is reasonable.
+    /// Only applicable when EnableTimeReasonabilityCheck is true.
     </span><span class="kw">pub </span>lead_time: f64,
-    <span class="comment">// Determines if publisher should use local clock as real time. If false,
-    // the timestamp of the latest measurement will be used as real-time.
-    // Only applicable when EnableTimeReasonabilityCheck is true.
+
+    <span class="doccomment">/// Determines if publisher should use local clock as real time. If false,
+    /// the timestamp of the latest measurement will be used as real-time.
+    /// Only applicable when EnableTimeReasonabilityCheck is true.
     </span><span class="kw">pub </span>use_local_clock_as_real_time: bool,
-    <span class="comment">// Determines if time should be restricted to milliseconds in non-compressed, compact measurements.
+
+    <span class="doccomment">/// Determines if time should be restricted to milliseconds in non-compressed, compact measurements.
     </span><span class="kw">pub </span>use_millisecond_resolution: bool,
-    <span class="comment">// Requests that the publisher filter, i.e., does not send, any NaN values.
+
+    <span class="doccomment">/// Requests that the publisher filter, i.e., does not send, any NaN values.
     </span><span class="kw">pub </span>request_nan_value_filter: bool,
 
-    <span class="comment">// Defines the start time for a requested temporal data playback, i.e., a historical subscription.
-    // Simply by specifying a StartTime and StopTime, a subscription is considered a historical subscription.
-    // Note that the publisher may not support historical subscriptions, in which case the subscribe will fail.
+    <span class="doccomment">/// Defines the start time for a requested temporal data playback, i.e., a historical subscription.
+    /// Simply by specifying a StartTime and StopTime, a subscription is considered a historical subscription.
+    /// Note that the publisher may not support historical subscriptions, in which case the subscribe will fail.
     </span><span class="kw">pub </span>start_time: String,
-    <span class="comment">// Defines the stop time for a requested temporal data playback, i.e., a historical subscription.
-    // Simply by specifying a StartTime and StopTime, a subscription is considered a historical subscription.
-    // Note that the publisher may not support historical subscriptions, in which case the subscribe will fail.
+
+    <span class="doccomment">/// Defines the stop time for a requested temporal data playback, i.e., a historical subscription.
+    /// Simply by specifying a StartTime and StopTime, a subscription is considered a historical subscription.
+    /// Note that the publisher may not support historical subscriptions, in which case the subscribe will fail.
     </span><span class="kw">pub </span>stop_time: String,
-    <span class="comment">// Defines any custom constraint parameters for a requested temporal data playback. This can
-    // include parameters that may be needed to initiate, filter, or control historical data access.
+
+    <span class="comment">//// Defines any custom constraint parameters for a requested temporal data playback. This can
+    </span><span class="doccomment">/// include parameters that may be needed to initiate, filter, or control historical data access.
     </span><span class="kw">pub </span>constraint_parameters: String,
-    <span class="comment">// Defines the initial playback speed, in milliseconds, for a requested temporal data playback.
-    // With the exception of the values of -1 and 0, this value specifies the desired processing interval for data, i.e.,
-    // basically a delay, or timer interval, over which to process data. A value of -1 means to use the default processing
-    // interval while a value of 0 means to process data as fast as possible.
+
+    <span class="doccomment">/// Defines the initial playback speed, in milliseconds, for a requested temporal data playback.
+    /// With the exception of the values of -1 and 0, this value specifies the desired processing interval for data, i.e.,
+    /// basically a delay, or timer interval, over which to process data. A value of -1 means to use the default processing
+    /// interval while a value of 0 means to process data as fast as possible.
     </span><span class="kw">pub </span>processing_interval: i32,
 
-    <span class="comment">// Defines any extra custom connection string parameters that may be needed for a subscription.
+    <span class="doccomment">/// Defines any extra custom connection string parameters that may be needed for a subscription.
     </span><span class="kw">pub </span>extra_connection_string_parameters: String,
 }
 
@@ -209,4 +225,4 @@
     }
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="sttp" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.1 (8460ca823 2023-03-20)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="sttp" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

@@ -287,8 +287,6 @@
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
 <a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
 </pre><pre class="rust"><code><span class="comment">//******************************************************************************************************
 //  ticks.rs - Gbtc
 //
@@ -439,7 +437,8 @@
     <span class="doccomment">/// Shows just the timestamp portion of a `Ticks` value with milliseconds, e.g., 15:04:05.999.
     </span><span class="kw">pub fn </span>to_short_string(ticks: <span class="self">Self</span>) -&gt; String {
         <span class="kw">let </span>datetime_str = <span class="self">Self</span>::to_string(ticks);
-        datetime_str.split(<span class="string">&quot; &quot;</span>).nth(<span class="number">1</span>).unwrap_or(<span class="string">&quot;&quot;</span>).to_string()
+        <span class="kw">let </span>result = datetime_str.split(<span class="string">&quot; &quot;</span>).nth(<span class="number">1</span>).unwrap_or(<span class="string">&quot;&quot;</span>).to_string();
+        result[..result.len() - <span class="number">6</span>].to_string()
     }
 }
 
@@ -566,9 +565,6 @@
         <span class="kw">let </span>ticks = <span class="kw-2">*</span>TEST_TICKS;
         <span class="kw">let </span>string_representation = Ticks::to_string(ticks);
 
-        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, string_representation);
-        <span class="macro">println!</span>(<span class="string">&quot;{}&quot;</span>, <span class="kw-2">*</span>TEST_DATETIME_VAL);
-
         <span class="macro">assert_eq!</span>(string_representation, <span class="kw-2">*</span>TEST_DATETIME_VAL);
     }
 
@@ -577,8 +573,8 @@
         <span class="kw">let </span>ticks = <span class="kw-2">*</span>TEST_TICKS;
         <span class="kw">let </span>short_string_representation = Ticks::to_short_string(ticks);
 
-        <span class="macro">assert_eq!</span>(short_string_representation, <span class="string">&quot;14:46:39.339127800&quot;</span>);
+        <span class="macro">assert_eq!</span>(short_string_representation, <span class="string">&quot;14:46:39.339&quot;</span>);
     }
 }
 </code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="sttp" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.1 (8460ca823 2023-03-20)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>
+</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="sttp" data-themes="" data-resource-suffix="" data-rustdoc-version="1.68.2 (9eb3afe9e 2023-03-27)" data-search-js="search-98d53477a794af0b.js" data-settings-js="settings-c3c521c753752a1a.js" data-settings-css="settings-08ddfdda51b8ee2e.css" ></div></body></html>

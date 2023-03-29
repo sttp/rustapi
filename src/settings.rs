@@ -40,44 +40,52 @@ pub struct Settings {
     /// Determines if time should be included in non-compressed, compact measurements.
     pub include_time: bool,
 
-    // Determines if publisher should perform time reasonability checks.
-    // When enabled LagTime and LeadTime will be used to determine if a measurement timestamp is reasonable.
+    /// Determines if publisher should perform time reasonability checks.
+    /// When enabled LagTime and LeadTime will be used to determine if a measurement timestamp is reasonable.
     pub enable_time_reasonability_check: bool,
-    // Defines the allowed past time deviation tolerance in seconds (can be sub-second).
-    // Value is used to determine if a measurement timestamp is reasonable.
-    // Only applicable when EnableTimeReasonabilityCheck is true.
+
+    /// Defines the allowed past time deviation tolerance in seconds (can be sub-second).
+    /// Value is used to determine if a measurement timestamp is reasonable.
+    /// Only applicable when EnableTimeReasonabilityCheck is true.
     pub lag_time: f64,
-    // Defines the allowed future time deviation tolerance in seconds (can be sub-second).
-    // Value is used to determine if a measurement timestamp is reasonable.
-    // Only applicable when EnableTimeReasonabilityCheck is true.
+
+    /// Defines the allowed future time deviation tolerance in seconds (can be sub-second).
+    /// Value is used to determine if a measurement timestamp is reasonable.
+    /// Only applicable when EnableTimeReasonabilityCheck is true.
     pub lead_time: f64,
-    // Determines if publisher should use local clock as real time. If false,
-    // the timestamp of the latest measurement will be used as real-time.
-    // Only applicable when EnableTimeReasonabilityCheck is true.
+
+    /// Determines if publisher should use local clock as real time. If false,
+    /// the timestamp of the latest measurement will be used as real-time.
+    /// Only applicable when EnableTimeReasonabilityCheck is true.
     pub use_local_clock_as_real_time: bool,
-    // Determines if time should be restricted to milliseconds in non-compressed, compact measurements.
+
+    /// Determines if time should be restricted to milliseconds in non-compressed, compact measurements.
     pub use_millisecond_resolution: bool,
-    // Requests that the publisher filter, i.e., does not send, any NaN values.
+
+    /// Requests that the publisher filter, i.e., does not send, any NaN values.
     pub request_nan_value_filter: bool,
 
-    // Defines the start time for a requested temporal data playback, i.e., a historical subscription.
-    // Simply by specifying a StartTime and StopTime, a subscription is considered a historical subscription.
-    // Note that the publisher may not support historical subscriptions, in which case the subscribe will fail.
+    /// Defines the start time for a requested temporal data playback, i.e., a historical subscription.
+    /// Simply by specifying a StartTime and StopTime, a subscription is considered a historical subscription.
+    /// Note that the publisher may not support historical subscriptions, in which case the subscribe will fail.
     pub start_time: String,
-    // Defines the stop time for a requested temporal data playback, i.e., a historical subscription.
-    // Simply by specifying a StartTime and StopTime, a subscription is considered a historical subscription.
-    // Note that the publisher may not support historical subscriptions, in which case the subscribe will fail.
+
+    /// Defines the stop time for a requested temporal data playback, i.e., a historical subscription.
+    /// Simply by specifying a StartTime and StopTime, a subscription is considered a historical subscription.
+    /// Note that the publisher may not support historical subscriptions, in which case the subscribe will fail.
     pub stop_time: String,
-    // Defines any custom constraint parameters for a requested temporal data playback. This can
-    // include parameters that may be needed to initiate, filter, or control historical data access.
+
+    //// Defines any custom constraint parameters for a requested temporal data playback. This can
+    /// include parameters that may be needed to initiate, filter, or control historical data access.
     pub constraint_parameters: String,
-    // Defines the initial playback speed, in milliseconds, for a requested temporal data playback.
-    // With the exception of the values of -1 and 0, this value specifies the desired processing interval for data, i.e.,
-    // basically a delay, or timer interval, over which to process data. A value of -1 means to use the default processing
-    // interval while a value of 0 means to process data as fast as possible.
+
+    /// Defines the initial playback speed, in milliseconds, for a requested temporal data playback.
+    /// With the exception of the values of -1 and 0, this value specifies the desired processing interval for data, i.e.,
+    /// basically a delay, or timer interval, over which to process data. A value of -1 means to use the default processing
+    /// interval while a value of 0 means to process data as fast as possible.
     pub processing_interval: i32,
 
-    // Defines any extra custom connection string parameters that may be needed for a subscription.
+    /// Defines any extra custom connection string parameters that may be needed for a subscription.
     pub extra_connection_string_parameters: String,
 }
 
