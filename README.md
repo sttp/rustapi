@@ -4,7 +4,8 @@
 <!--- Do not make image locations relative, README.md is referenced by "cargo doc" output. --->
 <img align="right" src="https://github.com/sttp/rustapi/raw/main/assets/sttp.png">
 
- [![docs](https://github.com/sttp/rustapi/raw/main/assets/doc-badge.svg)](https://sttp.github.io/rustapi)
+[![docs](https://github.com/sttp/rustapi/raw/main/assets/doc-badge.svg)](https://sttp.github.io/rustapi)
+[![crates.io](https://shields.io/crates/v/sttp)](https://crates.io/crates/sttp)
 
 The Streaming Telemetry Transport Protocol (STTP) is optimized for the demands of transporting high volume streaming data. The protocol allows for the transmission of any information that can be represented longitudinally, e.g., time-series data.
 
