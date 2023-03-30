@@ -32,3 +32,6 @@ pub use crate::transport::measurement::Measurement; // >> sttp::transport::Measu
 
 mod signal_index_cache;
 pub use crate::transport::signal_index_cache::SignalIndexCache; // >> sttp::transport::SignalIndexCache
+
+mod subscription_info;
+pub use crate::transport::subscription_info::SubscriptionInfo; // >> sttp::transport::SubscriptionInfo

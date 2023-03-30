@@ -73,8 +73,8 @@ impl Defaults {
     /// Default for publish interval in seconds.
     pub const PUBLISH_INTERVAL: f64 = 1.0;
 
-    /// Default for UDP data channel flag.
-    pub const UDP_DATA_CHANNEL: bool = false;
+    /// Default for enable UDP data channel flag.
+    pub const ENABLE_UDP_DATA_CHANNEL: bool = false;
 
     /// Default for local port for data channel.
     pub const DATA_CHANNEL_LOCAL_PORT: u16 = 0;
