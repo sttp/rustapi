@@ -5,6 +5,7 @@
         "ndarray",
         "repr",
         "Ritchie",
-        "sttp"
+        "sttp",
+        "TSSC"
     ]
 }

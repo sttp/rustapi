@@ -32,9 +32,6 @@
 <a href="#32" id="32">32</a>
 <a href="#33" id="33">33</a>
 <a href="#34" id="34">34</a>
-<a href="#35" id="35">35</a>
-<a href="#36" id="36">36</a>
-<a href="#37" id="37">37</a>
 </pre><pre class="rust"><code><span class="comment">//******************************************************************************************************
 //  transport.rs - Gbtc
 //
@@ -62,10 +59,7 @@
 // for better organization and ease of use of public API
 
 </span><span class="kw">mod </span>constants;
-<span class="kw">pub use </span><span class="kw">crate</span>::transport::constants::DataPacketFlags; <span class="comment">// &gt;&gt; sttp::transport::DataPacketFlags
-</span><span class="kw">pub use </span><span class="kw">crate</span>::transport::constants::Defaults; <span class="comment">// &gt;&gt; sttp::transport::Defaults
-</span><span class="kw">pub use </span><span class="kw">crate</span>::transport::constants::ServerCommand; <span class="comment">// &gt;&gt; sttp::transport::ServerCommand
-</span><span class="kw">pub use </span><span class="kw">crate</span>::transport::constants::StateFlags; <span class="comment">// &gt;&gt; sttp::transport::StateFlags
+<span class="kw">pub use </span><span class="kw">crate</span>::transport::constants::<span class="kw-2">*</span>; <span class="comment">// &gt;&gt; sttp::transport::*
 
 </span><span class="kw">mod </span>measurement;
 <span class="kw">pub use </span><span class="kw">crate</span>::transport::measurement::Measurement; <span class="comment">// &gt;&gt; sttp::transport::Measurement

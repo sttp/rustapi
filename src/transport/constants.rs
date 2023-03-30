@@ -21,11 +21,10 @@
 //
 //******************************************************************************************************
 
-#![allow(missing_copy_implementations)]
-
 use bitflags::bitflags;
 
 /// Defines default values for various STTP settings.
+#[derive(Clone, Copy)]
 pub struct Defaults;
 
 impl Defaults {
@@ -234,7 +233,7 @@ bitflags! {
     pub struct DataPacketFlags: u8 {
         /// Determines if serialized measurement is compact.
         ///
-        /// Obsolete: Bit will be removed in future version. Currently this bit is always set.
+        /// Currently this bit is always set.
         const COMPACT = 0x02;
 
         /// Determines which cipher index to use when encrypting data packet.
@@ -259,6 +258,11 @@ bitflags! {
 }
 
 /// Enumeration of the possible server commands received by a `DataPublisher` and sent by a `DataSubscriber` during an STTP session.
+///
+/// Solicited server commands will receive a `ServerResponse.Succeeded` or `ServerResponse.Failed` response code along with an
+/// associated success or failure message. Message type for successful responses will be based  on server command - for example,
+/// server response for a successful MetaDataRefresh command will return a serialized `DataSet` of the available server metadata.
+/// Message type for failed responses will always be a string of text representing the error message.
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 #[repr(u8)]
 pub enum ServerCommand {
@@ -272,9 +276,18 @@ pub enum ServerCommand {
     Connect = 0x00,
 
     /// Command code for requesting an updated set of metadata.
+    ///
+    /// Successful return message type will be a `DataSet` containing server device and measurement metadata.
+    /// Devices and measurements contain unique UUIDs that should be used to key metadata updates in local repository.
+    /// Optional string based message can follow command that should represent client requested meta-data filtering
+    /// expressions, e.g.: "FILTER MeasurementDetail WHERE SignalType != 'STAT'"
     MetadataRefresh = 0x01,
 
     /// Command code for requesting a subscription of streaming data from server based on connection string that follows.
+    ///
+    /// It will not be necessary to stop an existing subscription before requesting a new one. Successful return message
+    /// type will be string indicating total number of allowed points. Client should wait for `UpdateSignalIndexCache` and
+    /// `UpdateBaseTime` response codes before attempting to parse data when using the compact measurement format.
     Subscribe = 0x02,
 
     /// Command code for requesting that server stop sending streaming data to the client and cancel the current subscription.
@@ -293,17 +306,17 @@ pub enum ServerCommand {
 
     /// Command code for receipt of a notification.
     ///
-    /// This message is sent in response to ServerResponse.Notify.
+    /// This message is sent in response to `ServerResponse.Notify`.
     ConfirmNotification = 0x07,
 
     /// Command code for receipt of a buffer block measurement.
     ///
-    /// This message is sent in response to ServerResponse.BufferBlock.
+    /// This message is sent in response to `ServerResponse.BufferBlock`.
     ConfirmBufferBlock = 0x08,
 
     /// Command code for receipt of a base time update.
     ///
-    /// This message is sent in response to ServerResponse.UpdateBaseTimes.
+    /// This message is sent in response to `ServerResponse.UpdateBaseTimes`.
     ConfirmUpdateBaseTimes = 0x09,
 
     /// Command code for confirming the receipt of a signal index cache.
@@ -369,4 +382,236 @@ pub enum ServerCommand {
 
     /// Command code handling user-defined commands.
     UserCommand15 = 0xDF,
+}
+
+/// Enumeration of the possible server responses sent by `DataPublisher` and received by `DataSubscriber`
+/// during an STTP session.
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[repr(u8)]
+pub enum ServerResponse {
+    // Although the server commands and responses will be on two different paths, the response enumeration values
+    // are defined as distinct from the command values to make it easier to identify codes from a wire analysis.
+
+    //
+    /// Response code indicating a succeeded response.
+    ///
+    /// Informs client that its solicited server command succeeded, original command and success message follow.
+    Succeeded = 0x80,
+
+    /// Response code indicating a failed response.
+    ///
+    /// Informs client that its solicited server command failed, original command and failure message follow.
+    Failed = 0x81,
+
+    /// Response code indicating a data packet.
+    ///
+    /// Unsolicited response informs client that a data packet follows.
+    DataPacket = 0x82,
+
+    /// Response code indicating a signal index cache update.
+    ///
+    /// Unsolicited response requests that client update its runtime signal index cache with the one that follows.
+    UpdateSignalIndexCache = 0x83,
+
+    /// Response code indicating a runtime base-timestamp offsets have been updated.
+    ///
+    /// Unsolicited response requests that client update its runtime base-timestamp offsets with those that follow.
+    UpdateBaseTimes = 0x84,
+
+    /// Response code indicating a runtime cipher keys have been updated.
+    ///
+    /// Response, solicited or unsolicited, requests that client update its runtime data cipher keys with those that follow.
+    UpdateCipherKeys = 0x85,
+
+    /// Response code indicating the start time of data being published.
+    ///
+    /// Unsolicited response provides the start time of data being processed from the first measurement.
+    DataStartTime = 0x86,
+
+    /// Response code indicating that processing has completed.
+    ///
+    /// Unsolicited response provides notification that input processing has completed, typically via temporal constraint.
+    ProcessingComplete = 0x87,
+
+    /// Response code indicating a buffer block.
+    ///
+    /// Unsolicited response informs client that a raw buffer block follows.
+    BufferBlock = 0x88,
+
+    /// Response code indicating a notification.
+    ///
+    /// Unsolicited response provides a notification message to the client.
+    Notify = 0x89,
+
+    /// Response code indicating a that the publisher configuration metadata has changed.
+    ///
+    /// Unsolicited response provides a notification that the publisher's source configuration has changed and that
+    /// client may want to request a meta-data refresh.
+    ConfigurationChanged = 0x8A,
+
+    /// Response code handling user-defined responses.
+    UserResponse00 = 0xE0,
+
+    /// Response code handling user-defined responses.
+    UserResponse01 = 0xE1,
+
+    /// Response code handling user-defined responses.
+    UserResponse02 = 0xE2,
+
+    /// Response code handling user-defined responses.
+    UserResponse03 = 0xE3,
+
+    /// Response code handling user-defined responses.
+    UserResponse04 = 0xE4,
+
+    /// Response code handling user-defined responses.
+    UserResponse05 = 0xE5,
+
+    /// Response code handling user-defined responses.
+    UserResponse06 = 0xE6,
+
+    /// Response code handling user-defined responses.
+    UserResponse07 = 0xE7,
+
+    /// Response code handling user-defined responses.
+    UserResponse08 = 0xE8,
+
+    /// Response code handling user-defined responses.
+    UserResponse09 = 0xE9,
+
+    /// Response code handling user-defined responses.
+    UserResponse10 = 0xEA,
+
+    /// Response code handling user-defined responses.
+    UserResponse11 = 0xEB,
+
+    /// Response code handling user-defined responses.
+    UserResponse12 = 0xEC,
+
+    /// Response code handling user-defined responses.
+    UserResponse13 = 0xED,
+
+    /// Response code handling user-defined responses.
+    UserResponse14 = 0xEE,
+
+    /// Response code handling user-defined responses.
+    UserResponse15 = 0xEF,
+
+    /// Response code indicating a null-operation keep-alive ping.
+    ///
+    /// The command channel can remain quiet for some time, this command allows a period test of client connectivity.
+    NoOP = 0xFF,
+}
+
+bitflags! {
+    /// Enumeration of the possible modes that affect how `DataPublisher` and `DataSubscriber` communicate during as STTP session.
+    ///
+    /// Operational modes are sent from a subscriber to a publisher to request operational behaviors for the
+    /// connection, as a result the operation modes must be sent before any other command. The publisher may
+    /// silently refuse some requests (e.g., compression) based on its configuration. Operational modes only
+    /// apply to fundamental protocol control.
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    pub struct OperationalModes : u32 {
+        /// Bit mask used to get version number of protocol.
+        ///
+        /// Version number is currently set to 2.
+        const VersionMask = 0x000000FF;
+
+        ///Bit mask used to get character encoding used when exchanging messages between publisher and subscriber.
+        ///
+        /// STTP currently only supports UTF-8 string encoding.
+        const EncodingMask = 0x00000300;
+
+        /// Bit mask used to apply an implementation-specific extension to STTP.
+        ///
+        /// If the value is zero, no implementation specific extensions are applied.
+        /// If the value is non-zero, an implementation specific extension is applied, and all parties need to coordinate and agree to the extension.
+        /// If extended flags are unsupported, returned failure message text should be prefixed with UNSUPPORTED EXTENSION: as the context reference.
+        const ImplementationSpecificExtensionMask = 0x00FF0000;
+
+        /// Bit flag used to determine whether external measurements are exchanged during metadata synchronization.
+        ///
+        /// Bit set = external measurements are exchanged, bit clear = no external measurements are exchanged
+        const ReceiveExternalMetadata = 0x02000000;
+
+        /// Bit flag used to determine whether internal measurements are exchanged during metadata synchronization.
+        ///
+        /// Bit set = internal measurements are exchanged, bit clear = no internal measurements are exchanged
+        const ReceiveInternalMetadata = 0x04000000;
+
+        /// Bit flag used to determine whether payload data is compressed when exchanging between publisher and subscriber.
+        ///
+        /// Bit set = compress, bit clear = no compression
+        const CompressPayloadData = 0x20000000;
+
+        /// Bit flag used to determine whether the signal index cache is compressed when exchanging between publisher and subscriber.
+        ///
+        /// Bit set = compress, bit clear = no compression
+        const CompressSignalIndexCache = 0x40000000;
+
+        /// Bit flag used to determine whether metadata is compressed when exchanging between publisher and subscriber.
+        ///
+        /// Bit set = compress, bit clear = no compression
+        const CompressMetadata = 0x80000000;
+
+        /// State where there are no flags set.
+        const NoFlags = 0x00000000;
+    }
+}
+
+/// Enumeration of the possible string encoding options of an STTP session.
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[repr(u32)]
+pub enum OperationalEncoding {
+    /// Targets little-endian 16-bit Unicode character encoding for strings.
+    #[deprecated = "STTP currently only supports UTF-8 string encoding."]
+    UTF16LE = 0x00000000,
+
+    /// Targets big-endian 16-bit Unicode character encoding for strings.
+    #[deprecated = "STTP currently only supports UTF-8 string encoding."]
+    UTF16BE = 0x00000100,
+
+    /// Targets 8-bit variable-width Unicode character encoding for strings.
+    UTF8 = 0x00000200,
+}
+
+bitflags! {
+    /// Enumeration of the possible compression modes supported by STTP.
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    #[deprecated = "Only used for backwards compatibility with pre-standard STTP implementations. OperationalModes now supports custom compression types"]
+    pub struct CompressionModes : u32
+    {
+        /// Bit flag used determine if GZip compression will be used to metadata exchange.
+        const GZip = 0x00000020;
+
+        /// Bit flag used determine if the time-series special compression algorithm will be used for data exchange.
+        const TSSC = 0x00000040;
+
+        /// Defines state where no compression will be used.
+        const None = 0x00000000;
+    }
+}
+
+/// Enumeration of the possible security modes used by the `DataPublisher` to secure data
+/// sent over the command channel in STTP.
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum SecurityMode {
+    /// Defines security mode where data will be sent over the wire unencrypted.
+    Off,
+
+    /// Defines security mode where data will be sent over wire using Transport Layer Security (TLS).
+    TLS,
+}
+
+/// Enumeration of the possible connection status results used by the `SubscriberConnector`.
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+pub enum ConnectStatus {
+    /// Connection succeeded status.
+    Success = 1,
+
+    /// Connection failed status.
+    Failed = 0,
+
+    /// Connection cancelled status.
+    Canceled = -1,
 }

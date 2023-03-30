@@ -25,10 +25,7 @@
 // for better organization and ease of use of public API
 
 mod constants;
-pub use crate::transport::constants::DataPacketFlags; // >> sttp::transport::DataPacketFlags
-pub use crate::transport::constants::Defaults; // >> sttp::transport::Defaults
-pub use crate::transport::constants::ServerCommand; // >> sttp::transport::ServerCommand
-pub use crate::transport::constants::StateFlags; // >> sttp::transport::StateFlags
+pub use crate::transport::constants::*;
 
 mod measurement;
 pub use crate::transport::measurement::Measurement; // >> sttp::transport::Measurement
