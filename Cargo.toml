@@ -1,6 +1,15 @@
 [package]
 name = "sttp"
 version = "0.1.0"
+authors = ["Grid Protection Alliance"]
+license = "MIT"
+description = "Rust STTP/IEEE 2664 Implementation"
+documentation = "https://sttp.github.io/rustapi/sttp/"
+homepage = "https://github.com/sttp/rustapi"
+repository = "https://github.com/sttp/rustapi"
+keywords = ["sttp", "ieee2664", "protocol", "streaming", "synchrophasor"]
+categories = ["network-programming"]
+readme = "README.md"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
