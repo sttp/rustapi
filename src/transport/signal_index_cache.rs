@@ -21,7 +21,6 @@
 //
 //******************************************************************************************************
 
-use byteorder::{BigEndian, ByteOrder};
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::error::Error;
@@ -154,7 +153,7 @@ impl SignalIndexCache {
             return Err("not enough buffer provided to parse".into());
         }
 
-        let binary_length = BigEndian::read_u32(&buffer);
+        let binary_length = u32::from_be_bytes(buffer.try_into().unwrap());
         let mut offset = 4;
 
         if (length as u32) < binary_length {
@@ -164,23 +163,23 @@ impl SignalIndexCache {
         let subscriber_id = Uuid::from_slice(&buffer[offset..offset + 16])?;
         offset += 16;
 
-        let reference_count = BigEndian::read_u32(&buffer[offset..]);
+        let reference_count = u32::from_be_bytes(buffer[offset..].try_into().unwrap());
         offset += 4;
 
         for _ in 0..reference_count {
-            let signal_index = BigEndian::read_i32(&buffer[offset..]);
+            let signal_index = i32::from_be_bytes(buffer[offset..].try_into().unwrap());
             offset += 4;
 
             let signal_id = Uuid::from_slice(&buffer[offset..offset + 16])?;
             offset += 16;
 
-            let source_size = BigEndian::read_u32(&buffer[offset..]) as usize;
+            let source_size = u32::from_be_bytes(buffer[offset..].try_into().unwrap()) as usize;
             offset += 4;
 
             let source = str::from_utf8(&buffer[offset..offset + source_size])?;
             offset += source_size;
 
-            let key_id = BigEndian::read_u64(&buffer[offset..]);
+            let key_id = u64::from_be_bytes(buffer[offset..].try_into().unwrap());
             offset += 8;
 
             self.add_record(signal_index, signal_id, source.to_string(), key_id);
