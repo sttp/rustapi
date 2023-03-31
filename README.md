@@ -17,7 +17,7 @@ For discussion and support, join our [discussions channel](https://github.com/st
 
 ## Links
 
-* [STTP Crate](https://crates.io/crates/sttp)
+* [STTP Rust Crate](https://crates.io/crates/sttp)
 * [STTP Rust Documentation](https://sttp.github.io/rustapi/)
 * [STTP Rust on GitHub](https://github.com/sttp/rustapi)
 * [STTP General Documentation](https://sttp.github.io/documentation/)

@@ -153,7 +153,8 @@ impl SignalIndexCache {
             return Err("not enough buffer provided to parse".into());
         }
 
-        let binary_length = u32::from_be_bytes(buffer.try_into().unwrap());
+        let bytes: [u8; 4] = buffer.try_into()?;
+        let binary_length = u32::from_be_bytes(bytes);
         let mut offset = 4;
 
         if (length as u32) < binary_length {
@@ -163,23 +164,27 @@ impl SignalIndexCache {
         let subscriber_id = Uuid::from_slice(&buffer[offset..offset + 16])?;
         offset += 16;
 
-        let reference_count = u32::from_be_bytes(buffer[offset..].try_into().unwrap());
+        let bytes: [u8; 4] = buffer[offset..].try_into()?;
+        let reference_count = u32::from_be_bytes(bytes);
         offset += 4;
 
         for _ in 0..reference_count {
-            let signal_index = i32::from_be_bytes(buffer[offset..].try_into().unwrap());
+            let bytes: [u8; 4] = buffer[offset..].try_into()?;
+            let signal_index = i32::from_be_bytes(bytes);
             offset += 4;
 
             let signal_id = Uuid::from_slice(&buffer[offset..offset + 16])?;
             offset += 16;
 
-            let source_size = u32::from_be_bytes(buffer[offset..].try_into().unwrap()) as usize;
+            let bytes: [u8; 4] = buffer[offset..].try_into()?;
+            let source_size = u32::from_be_bytes(bytes) as usize;
             offset += 4;
 
             let source = str::from_utf8(&buffer[offset..offset + source_size])?;
             offset += source_size;
 
-            let key_id = u64::from_be_bytes(buffer[offset..].try_into().unwrap());
+            let bytes: [u8; 8] = buffer[offset..].try_into()?;
+            let key_id = u64::from_be_bytes(bytes);
             offset += 8;
 
             self.add_record(signal_index, signal_id, source.to_string(), key_id);

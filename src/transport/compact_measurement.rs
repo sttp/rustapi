@@ -25,6 +25,7 @@ use crate::transport::{Measurement, SignalIndexCache, StateFlags};
 use crate::Ticks;
 use bitflags::bitflags;
 use chrono::{DateTime, Utc};
+use std::error::Error;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use std::sync::Arc;
 use uuid::Uuid;
@@ -278,9 +279,9 @@ impl CompactMeasurement {
     }
 
     /// parses a CompactMeasurement from the specified byte buffer.
-    pub fn decode(&mut self, buffer: &[u8]) -> Result<usize, &'static str> {
+    pub fn decode(&mut self, buffer: &[u8]) -> Result<usize, Box<dyn Error>> {
         if buffer.len() < FIXED_LENGTH {
-            return Err("Not enough buffer available to deserialize compact measurement");
+            return Err("Not enough buffer available to deserialize compact measurement".into());
         }
 
         // Basic Compact Measurement Format:
@@ -297,13 +298,13 @@ impl CompactMeasurement {
         index += 1;
 
         // Decode runtime ID
-        self.set_runtime_id(
-            u32::from_be_bytes(buffer[index..index + 4].try_into().unwrap()) as i32,
-        );
+        let bytes: [u8; 4] = buffer[index..].try_into()?;
+        self.set_runtime_id(i32::from_be_bytes(bytes));
         index += 4;
 
         // Decode value
-        self.value = f32::from_be_bytes(buffer[index..index + 4].try_into().unwrap()) as f64;
+        let bytes: [u8; 4] = buffer[index..].try_into()?;
+        self.value = f32::from_be_bytes(bytes) as f64;
         index += 4;
 
         if !self.include_time {
@@ -316,32 +317,27 @@ impl CompactMeasurement {
             if self.use_millisecond_resolution {
                 // Decode 2-byte millisecond offset timestamp
                 if base_time_offset > 0 {
+                    let bytes: [u8; 2] = buffer[index..].try_into()?;
                     self.timestamp = Ticks::new(
                         base_time_offset
-                            + (u64::from(u16::from_be_bytes(
-                                buffer[index..index + 2].try_into().unwrap(),
-                            )) * Ticks::PER_MILLISECOND),
+                            + (u64::from(u16::from_be_bytes(bytes)) * Ticks::PER_MILLISECOND),
                     );
                 }
                 index += 2;
             } else {
                 // Decode 4-byte tick offset timestamp
                 if base_time_offset > 0 {
-                    self.timestamp = Ticks::new(
-                        base_time_offset
-                            + u64::from(u32::from_be_bytes(
-                                buffer[index..index + 4].try_into().unwrap(),
-                            )),
-                    );
+                    let bytes: [u8; 4] = buffer[index..].try_into()?;
+                    self.timestamp =
+                        Ticks::new(base_time_offset + u64::from(u32::from_be_bytes(bytes)));
                 }
                 index += 4;
             }
         } else {
             // Decode 8-byte full fidelity timestamp
             // Note that only a full fidelity timestamp can carry leap second flags
-            self.timestamp = Ticks::new(u64::from_be_bytes(
-                buffer[index..index + 8].try_into().unwrap(),
-            ));
+            let bytes: [u8; 8] = buffer[index..].try_into()?;
+            self.timestamp = Ticks::new(u64::from_be_bytes(bytes));
             index += 8;
         }
 
