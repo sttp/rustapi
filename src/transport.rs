@@ -28,7 +28,13 @@ mod constants;
 pub use crate::transport::constants::*;
 
 mod measurement;
-pub use crate::transport::measurement::Measurement; // >> sttp::transport::Measurement
+pub use crate::transport::measurement::*;
+
+mod basic_measurement;
+pub use crate::transport::basic_measurement::BasicMeasurement; // >> sttp::transport::BasicMeasurement
+
+mod compact_measurement;
+pub use crate::transport::compact_measurement::CompactMeasurement; // >> sttp::transport::CompactMeasurement
 
 mod signal_index_cache;
 pub use crate::transport::signal_index_cache::SignalIndexCache; // >> sttp::transport::SignalIndexCache

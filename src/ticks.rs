@@ -70,6 +70,11 @@ impl Ticks {
     /// `Ticks` representation of the Unix epoch timestamp starting at January 1, 1970.
     pub const UNIX_BASE_OFFSET: u64 = 621_355_968_000_000_000;
 
+    /// Creates a `Ticks` value.
+    pub fn new(val: u64) -> Self {
+        Self { val }
+    }
+
     /// Gets the timestamp portion of the `Ticks` value, i.e.,
     /// the 62-bit time value excluding any leap second flags.
     pub fn timestamp_value(&self) -> u64 {

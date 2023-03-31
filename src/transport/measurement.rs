@@ -26,44 +26,44 @@ use chrono::{DateTime, Utc};
 use std::fmt::{Display, Formatter, Result as FmtResult};
 use uuid::Uuid;
 
-/// Represents a basic unit of measured data for transmission or reception in the STTP API.
-#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
-pub struct Measurement {
-    /// Defines measurement's globally unique identifier.
-    pub signal_id: Uuid,
+/// Defines a trait representing measured data in the STTP API.
+pub trait Measurement: Display {
+    /// Gets measurement's globally unique identifier.
+    fn signal_id(&self) -> Uuid;
+    /// Sets measurement's globally unique identifier.
+    fn set_signal_id(&mut self, signal_id: Uuid);
 
-    /// Defines instantaneous value of the measurement.
-    pub value: f64,
+    /// Gets instantaneous value of the measurement.
+    fn value(&self) -> f64;
+    /// Sets instantaneous value of the measurement.
+    fn set_value(&mut self, value: f64);
 
-    /// Defines the STTP uint64 timestamp, in ticks, that measurement was taken.
-    pub timestamp: Ticks,
+    /// Gets the STTP uint64 timestamp, in ticks, that measurement was taken.
+    fn timestamp(&self) -> Ticks;
+    /// Sets the STTP uint64 timestamp, in ticks, that measurement was taken.
+    fn set_timestamp(&mut self, timestamp: Ticks);
 
-    /// Defines flags indicating the state of the measurement as reported by the device that took it.
-    pub flags: StateFlags,
-}
+    /// Gets flags indicating the state of the measurement as reported by the device that took it.
+    fn flags(&self) -> StateFlags;
+    /// Sets flags indicating the state of the measurement as reported by the device that took it.
+    fn set_flags(&mut self, flags: StateFlags);
 
-impl Measurement {
     /// Gets the integer-based time from a `Measurement` ticks-based timestamp, i.e.,
     /// the 62-bit time value excluding any leap-second flags.
-    pub fn timestamp_value(&self) -> u64 {
-        self.timestamp.timestamp_value()
-    }
+    fn timestamp_value(&self) -> u64;
 
     /// Gets `Measurement` ticks-based timestamp as a standard Rust `DateTime` value.
-    pub fn datetime(&self) -> DateTime<Utc> {
-        self.timestamp.to_datetime()
-    }
-}
+    fn datetime(&self) -> DateTime<Utc>;
 
-impl Display for Measurement {
+    /// Formats the `Measurement` using a default formatter.
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         write!(
             f,
             "{} @ {} = {:.3} ({:?})",
-            self.signal_id,
-            self.timestamp.to_short_string(),
-            self.value,
-            self.flags
+            self.signal_id(),
+            self.timestamp().to_short_string(),
+            self.value(),
+            self.flags()
         )
     }
 }

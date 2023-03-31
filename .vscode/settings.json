@@ -1,11 +1,13 @@
 {
     "cSpell.words": [
+        "ctypes",
         "Gbtc",
         "nanos",
         "ndarray",
         "repr",
         "Ritchie",
         "sttp",
-        "TSSC"
+        "TSSC",
+        "tyvar"
     ]
 }

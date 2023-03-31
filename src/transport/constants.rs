@@ -190,10 +190,10 @@ bitflags! {
         const FUTURE_TIME_ALARM = 0x80000;
 
         /// Measurement flag for an up-sampled state.
-        const UPSAMPLED = 0x100000;
+        const UP_SAMPLED = 0x100000;
 
         /// Measurement flag for a down-sampled state.
-        const DOWNSAMPLED = 0x200000;
+        const DOWN_SAMPLED = 0x200000;
 
         /// Measurement flag for a discarded value state.
         const DISCARDED_VALUE = 0x400000;

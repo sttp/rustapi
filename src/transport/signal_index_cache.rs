@@ -30,6 +30,7 @@ use uuid::Uuid;
 
 /// Represents a mapping of 32-bit runtime IDs to 128-bit globally unique measurement IDs. The class
 /// additionally provides reverse lookup and an extra mapping to human-readable measurement keys.
+#[derive(Default, Debug, Clone)]
 pub struct SignalIndexCache {
     reference: HashMap<i32, u32>,
     signal_id_list: Vec<Uuid>,
