@@ -304,6 +304,11 @@
 <a href="#304" id="304">304</a>
 <a href="#305" id="305">305</a>
 <a href="#306" id="306">306</a>
+<a href="#307" id="307">307</a>
+<a href="#308" id="308">308</a>
+<a href="#309" id="309">309</a>
+<a href="#310" id="310">310</a>
+<a href="#311" id="311">311</a>
 </pre><pre class="rust"><code><span class="comment">//******************************************************************************************************
 //  ticks.rs - Gbtc
 //
@@ -375,6 +380,11 @@
 
     <span class="doccomment">/// `Ticks` representation of the Unix epoch timestamp starting at January 1, 1970.
     </span><span class="kw">pub const </span>UNIX_BASE_OFFSET: u64 = <span class="number">621_355_968_000_000_000</span>;
+
+    <span class="doccomment">/// Creates a `Ticks` value.
+    </span><span class="kw">pub fn </span>new(val: u64) -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{ val }
+    }
 
     <span class="doccomment">/// Gets the timestamp portion of the `Ticks` value, i.e.,
     /// the 62-bit time value excluding any leap second flags.

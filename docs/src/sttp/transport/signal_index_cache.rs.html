@@ -188,6 +188,11 @@
 <a href="#188" id="188">188</a>
 <a href="#189" id="189">189</a>
 <a href="#190" id="190">190</a>
+<a href="#191" id="191">191</a>
+<a href="#192" id="192">192</a>
+<a href="#193" id="193">193</a>
+<a href="#194" id="194">194</a>
+<a href="#195" id="195">195</a>
 </pre><pre class="rust"><code><span class="comment">//******************************************************************************************************
 //  signal_index_cache.rs - Gbtc
 //
@@ -211,8 +216,7 @@
 //
 //******************************************************************************************************
 
-</span><span class="kw">use </span>byteorder::{BigEndian, ByteOrder};
-<span class="kw">use </span>std::collections::HashMap;
+</span><span class="kw">use </span>std::collections::HashMap;
 <span class="kw">use </span>std::collections::HashSet;
 <span class="kw">use </span>std::error::Error;
 <span class="kw">use </span>std::str;
@@ -220,6 +224,7 @@
 
 <span class="doccomment">/// Represents a mapping of 32-bit runtime IDs to 128-bit globally unique measurement IDs. The class
 /// additionally provides reverse lookup and an extra mapping to human-readable measurement keys.
+</span><span class="attr">#[derive(Default, Debug, Clone)]
 </span><span class="kw">pub struct </span>SignalIndexCache {
     reference: HashMap&lt;i32, u32&gt;,
     signal_id_list: Vec&lt;Uuid&gt;,
@@ -343,7 +348,8 @@
             <span class="kw">return </span><span class="prelude-val">Err</span>(<span class="string">&quot;not enough buffer provided to parse&quot;</span>.into());
         }
 
-        <span class="kw">let </span>binary_length = BigEndian::read_u32(<span class="kw-2">&amp;</span>buffer);
+        <span class="kw">let </span>bytes: [u8; <span class="number">4</span>] = buffer.try_into()<span class="question-mark">?</span>;
+        <span class="kw">let </span>binary_length = u32::from_be_bytes(bytes);
         <span class="kw">let </span><span class="kw-2">mut </span>offset = <span class="number">4</span>;
 
         <span class="kw">if </span>(length <span class="kw">as </span>u32) &lt; binary_length {
@@ -353,23 +359,27 @@
         <span class="kw">let </span>subscriber_id = Uuid::from_slice(<span class="kw-2">&amp;</span>buffer[offset..offset + <span class="number">16</span>])<span class="question-mark">?</span>;
         offset += <span class="number">16</span>;
 
-        <span class="kw">let </span>reference_count = BigEndian::read_u32(<span class="kw-2">&amp;</span>buffer[offset..]);
+        <span class="kw">let </span>bytes: [u8; <span class="number">4</span>] = buffer[offset..].try_into()<span class="question-mark">?</span>;
+        <span class="kw">let </span>reference_count = u32::from_be_bytes(bytes);
         offset += <span class="number">4</span>;
 
         <span class="kw">for _ in </span><span class="number">0</span>..reference_count {
-            <span class="kw">let </span>signal_index = BigEndian::read_i32(<span class="kw-2">&amp;</span>buffer[offset..]);
+            <span class="kw">let </span>bytes: [u8; <span class="number">4</span>] = buffer[offset..].try_into()<span class="question-mark">?</span>;
+            <span class="kw">let </span>signal_index = i32::from_be_bytes(bytes);
             offset += <span class="number">4</span>;
 
             <span class="kw">let </span>signal_id = Uuid::from_slice(<span class="kw-2">&amp;</span>buffer[offset..offset + <span class="number">16</span>])<span class="question-mark">?</span>;
             offset += <span class="number">16</span>;
 
-            <span class="kw">let </span>source_size = BigEndian::read_u32(<span class="kw-2">&amp;</span>buffer[offset..]) <span class="kw">as </span>usize;
+            <span class="kw">let </span>bytes: [u8; <span class="number">4</span>] = buffer[offset..].try_into()<span class="question-mark">?</span>;
+            <span class="kw">let </span>source_size = u32::from_be_bytes(bytes) <span class="kw">as </span>usize;
             offset += <span class="number">4</span>;
 
             <span class="kw">let </span>source = str::from_utf8(<span class="kw-2">&amp;</span>buffer[offset..offset + source_size])<span class="question-mark">?</span>;
             offset += source_size;
 
-            <span class="kw">let </span>key_id = BigEndian::read_u64(<span class="kw-2">&amp;</span>buffer[offset..]);
+            <span class="kw">let </span>bytes: [u8; <span class="number">8</span>] = buffer[offset..].try_into()<span class="question-mark">?</span>;
+            <span class="kw">let </span>key_id = u64::from_be_bytes(bytes);
             offset += <span class="number">8</span>;
 
             <span class="self">self</span>.add_record(signal_index, signal_id, source.to_string(), key_id);

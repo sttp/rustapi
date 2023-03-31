@@ -95,44 +95,44 @@
 <span class="kw">use </span>std::fmt::{Display, Formatter, <span class="prelude-ty">Result </span><span class="kw">as </span>FmtResult};
 <span class="kw">use </span>uuid::Uuid;
 
-<span class="doccomment">/// Represents a basic unit of measured data for transmission or reception in the STTP API.
-</span><span class="attr">#[derive(Default, Debug, Clone, Copy, PartialEq, PartialOrd)]
-</span><span class="kw">pub struct </span>Measurement {
-    <span class="doccomment">/// Defines measurement&#39;s globally unique identifier.
-    </span><span class="kw">pub </span>signal_id: Uuid,
+<span class="doccomment">/// Defines a trait representing measured data in the STTP API.
+</span><span class="kw">pub trait </span>Measurement: Display {
+    <span class="doccomment">/// Gets measurement&#39;s globally unique identifier.
+    </span><span class="kw">fn </span>signal_id(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Uuid;
+    <span class="doccomment">/// Sets measurement&#39;s globally unique identifier.
+    </span><span class="kw">fn </span>set_signal_id(<span class="kw-2">&amp;mut </span><span class="self">self</span>, signal_id: Uuid);
 
-    <span class="doccomment">/// Defines instantaneous value of the measurement.
-    </span><span class="kw">pub </span>value: f64,
+    <span class="doccomment">/// Gets instantaneous value of the measurement.
+    </span><span class="kw">fn </span>value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; f64;
+    <span class="doccomment">/// Sets instantaneous value of the measurement.
+    </span><span class="kw">fn </span>set_value(<span class="kw-2">&amp;mut </span><span class="self">self</span>, value: f64);
 
-    <span class="doccomment">/// Defines the STTP uint64 timestamp, in ticks, that measurement was taken.
-    </span><span class="kw">pub </span>timestamp: Ticks,
+    <span class="doccomment">/// Gets the STTP uint64 timestamp, in ticks, that measurement was taken.
+    </span><span class="kw">fn </span>timestamp(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Ticks;
+    <span class="doccomment">/// Sets the STTP uint64 timestamp, in ticks, that measurement was taken.
+    </span><span class="kw">fn </span>set_timestamp(<span class="kw-2">&amp;mut </span><span class="self">self</span>, timestamp: Ticks);
 
-    <span class="doccomment">/// Defines flags indicating the state of the measurement as reported by the device that took it.
-    </span><span class="kw">pub </span>flags: StateFlags,
-}
+    <span class="doccomment">/// Gets flags indicating the state of the measurement as reported by the device that took it.
+    </span><span class="kw">fn </span>flags(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; StateFlags;
+    <span class="doccomment">/// Sets flags indicating the state of the measurement as reported by the device that took it.
+    </span><span class="kw">fn </span>set_flags(<span class="kw-2">&amp;mut </span><span class="self">self</span>, flags: StateFlags);
 
-<span class="kw">impl </span>Measurement {
     <span class="doccomment">/// Gets the integer-based time from a `Measurement` ticks-based timestamp, i.e.,
     /// the 62-bit time value excluding any leap-second flags.
-    </span><span class="kw">pub fn </span>timestamp_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64 {
-        <span class="self">self</span>.timestamp.timestamp_value()
-    }
+    </span><span class="kw">fn </span>timestamp_value(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; u64;
 
     <span class="doccomment">/// Gets `Measurement` ticks-based timestamp as a standard Rust `DateTime` value.
-    </span><span class="kw">pub fn </span>datetime(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; DateTime&lt;Utc&gt; {
-        <span class="self">self</span>.timestamp.to_datetime()
-    }
-}
+    </span><span class="kw">fn </span>datetime(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; DateTime&lt;Utc&gt;;
 
-<span class="kw">impl </span>Display <span class="kw">for </span>Measurement {
-    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; FmtResult {
+    <span class="doccomment">/// Formats the `Measurement` using a default formatter.
+    </span><span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, f: <span class="kw-2">&amp;mut </span>Formatter&lt;<span class="lifetime">&#39;_</span>&gt;) -&gt; FmtResult {
         <span class="macro">write!</span>(
             f,
             <span class="string">&quot;{} @ {} = {:.3} ({:?})&quot;</span>,
-            <span class="self">self</span>.signal_id,
-            <span class="self">self</span>.timestamp.to_short_string(),
-            <span class="self">self</span>.value,
-            <span class="self">self</span>.flags
+            <span class="self">self</span>.signal_id(),
+            <span class="self">self</span>.timestamp().to_short_string(),
+            <span class="self">self</span>.value(),
+            <span class="self">self</span>.flags()
         )
     }
 }
