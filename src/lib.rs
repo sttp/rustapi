@@ -79,6 +79,9 @@ pub use crate::settings::Settings; // >> sttp::Settings
 mod ticks;
 pub use crate::ticks::Ticks; // >> sttp::Ticks
 
+mod version;
+pub use crate::version::Version; // >> sttp::Version
+
 /// Represents data functionality of the STTP library.
 pub mod data;
 
