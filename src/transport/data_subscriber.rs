@@ -1,5 +1,5 @@
 //******************************************************************************************************
-//  transport.rs - Gbtc
+//  data_subscriber.rs - Gbtc
 //
 //  Copyright © 2023, Grid Protection Alliance.  All Rights Reserved.
 //
@@ -16,34 +16,27 @@
 //
 //  Code Modification History:
 //  ----------------------------------------------------------------------------------------------------
-//  03/25/2023 - J. Ritchie Carroll
+//  04/01/2023 - J. Ritchie Carroll
 //       Generated original version of source code.
 //
 //******************************************************************************************************
 
-// Expose local submodules as public passthroughs of sttp::transport module
-// for better organization and ease of use of public API
+// TODO: Remove later
+#![allow(dead_code)]
 
-mod constants;
-pub use crate::transport::constants::*;
+use crate::transport::SubscriberConnector;
+use crate::transport::SubscriptionInfo;
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex, RwLock};
+use uuid::Uuid;
 
-mod measurement;
-pub use crate::transport::measurement::*;
+/// Represents a subscription for an STTP connection.
+//#[derive(Debug)]
+pub struct DataSubscriber {
+    subscription_info: SubscriptionInfo,
+    subscriber_id: Uuid,
 
-mod basic_measurement;
-pub use crate::transport::basic_measurement::BasicMeasurement; // >> sttp::transport::BasicMeasurement
+    pub(crate) disposing: AtomicBool,
 
-mod compact_measurement;
-pub use crate::transport::compact_measurement::CompactMeasurement; // >> sttp::transport::CompactMeasurement
-
-mod signal_index_cache;
-pub use crate::transport::signal_index_cache::SignalIndexCache; // >> sttp::transport::SignalIndexCache
-
-mod subscription_info;
-pub use crate::transport::subscription_info::SubscriptionInfo; // >> sttp::transport::SubscriptionInfo
-
-mod data_subscriber;
-pub use crate::transport::data_subscriber::DataSubscriber; // >> sttp::transport::DataSubscriber
-
-mod subscriber_connector;
-pub use crate::transport::subscriber_connector::SubscriberConnector; // >> sttp::transport::SubscriberConnector
+    pub(crate) connector: Arc<SubscriberConnector>,
+}

@@ -24,7 +24,7 @@
 use crate::transport::constants::Defaults;
 
 /// Defines subscription related settings for a `DataSubscriber` instance.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct SubscriptionInfo {
     /// Gets or sets the desired measurements for a subscription. Examples include:
     ///
