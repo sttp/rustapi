@@ -43,7 +43,7 @@ pub struct SubscriptionInfo {
     pub publish_interval: f64,
 
     /// Gets or sets flag that requests that a UDP channel be used for data publication.
-    pub enable_udp_data_channel: bool,
+    pub udp_data_channel: bool,
 
     /// Gets or sets the desired UDP port to use for publication.
     pub data_channel_local_port: u16,
@@ -53,6 +53,25 @@ pub struct SubscriptionInfo {
 
     /// Gets or sets flag that determines if time should be included in non-compressed, compact measurements.
     pub include_time: bool,
+
+    /// Determines if publisher should perform time reasonability checks.
+    /// When enabled `lag_time` and `lead_time` will be used to determine if a measurement timestamp is reasonable.
+    pub enable_time_reasonability_check: bool,
+
+    /// Defines defines the allowed past time deviation tolerance in seconds (can be sub-second).
+    /// Value is used to determine if a measurement timestamp is reasonable.
+    /// Only applicable when `enable_time_reasonability_check` is `true`.
+    pub lag_time: f64,
+
+    /// Defines defines the allowed future time deviation tolerance in seconds (can be sub-second).
+    /// Value is used to determine if a measurement timestamp is reasonable.
+    /// Only applicable when `enable_time_reasonability_check` is `true`.
+    pub lead_time: f64,
+
+    /// Determines if publisher should use local clock as real time. If false,
+    /// the timestamp of the latest measurement will be used as real-time.
+    /// Only applicable when `enable_time_reasonability_check` is `true`.
+    pub use_local_clock_as_real_time: bool,
 
     /// Gets or sets flag that determines if time should be restricted to milliseconds in non-compressed, compact measurements.
     pub use_millisecond_resolution: bool,
@@ -91,10 +110,14 @@ impl Default for SubscriptionInfo {
             filter_expression: Defaults::FILTER_EXPRESSION.to_string(),
             throttled: Defaults::THROTTLED,
             publish_interval: Defaults::PUBLISH_INTERVAL,
-            enable_udp_data_channel: Defaults::ENABLE_UDP_DATA_CHANNEL,
+            udp_data_channel: Defaults::ENABLE_UDP_DATA_CHANNEL,
             data_channel_local_port: Defaults::DATA_CHANNEL_LOCAL_PORT,
             data_channel_interface: Defaults::DATA_CHANNEL_INTERFACE.to_string(),
             include_time: Defaults::INCLUDE_TIME,
+            enable_time_reasonability_check: Defaults::ENABLE_TIME_REASONABILITY_CHECK,
+            lag_time: Defaults::LAG_TIME,
+            lead_time: Defaults::LEAD_TIME,
+            use_local_clock_as_real_time: Defaults::USE_LOCAL_CLOCK_AS_REAL_TIME,
             use_millisecond_resolution: Defaults::USE_MILLISECOND_RESOLUTION,
             request_nan_value_filter: Defaults::REQUEST_NAN_VALUE_FILTER,
             start_time: Defaults::START_TIME.to_string(),

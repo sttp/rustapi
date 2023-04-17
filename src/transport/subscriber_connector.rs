@@ -65,7 +65,7 @@ pub struct SubscriberConnector {
     pub auto_reconnect: bool,
 
     connect_attempt: i32,
-    connection_refused: AtomicBool,
+    pub(crate) connection_refused: AtomicBool,
     cancel: AtomicBool,
     reconnect_thread_mutex: Mutex<Option<JoinHandle<()>>>,
     wait_timer_mutex: Mutex<Option<JoinHandle<()>>>,
@@ -108,6 +108,26 @@ impl SubscriberConnector {
         }
     }
 
+    pub(crate) fn dispose(&self) {
+        self.cancel.store(true, Ordering::SeqCst);
+
+        // // Make sure to wait on any running reconnect to complete...
+        // let mut reconnect_thread_guard = self.reconnect_thread_mutex.lock().unwrap();
+
+        // if let Some(reconnect_thread) = reconnect_thread_guard.take() {
+        //     drop(reconnect_thread_guard);
+        //     reconnect_thread.join().unwrap();
+        // }
+
+        // // Make sure to wait on any running wait timer to complete...
+        // let mut wait_timer_guard = self.wait_timer_mutex.lock().unwrap();
+
+        // if let Some(wait_timer) = wait_timer_guard.take() {
+        //     drop(wait_timer_guard);
+        //     wait_timer.join().unwrap();
+        // }
+    }
+
     fn auto_reconnect(&self, ds: Arc<DataSubscriber>) {
         if self.cancel.load(Ordering::SeqCst) || ds.disposing.load(Ordering::SeqCst) {
             return;
@@ -124,47 +144,42 @@ impl SubscriberConnector {
         let sc = Arc::clone(&ds.connector);
         let reconnect_thread = thread::spawn({
             move || {
-                // Reset connection attempt counter if last attempt was not refused
-                if !sc.connection_refused.load(Ordering::SeqCst) {
-                    //sc.reset_connection();
-                }
+                // // Reset connection attempt counter if last attempt was not refused
+                // if !sc.connection_refused.load(Ordering::SeqCst) {
+                //     //sc.reset_connection();
+                // }
 
-                if sc.max_retries != -1 && sc.connect_attempt >= sc.max_retries {
-                    (sc.error_message_callback)(
-                        "Maximum connection retries attempted. Auto-reconnect canceled."
-                            .to_string(),
-                    );
-                    return;
-                }
+                // if sc.max_retries != -1 && sc.connect_attempt >= sc.max_retries {
+                //     (sc.error_message_callback)(
+                //         "Maximum connection retries attempted. Auto-reconnect canceled."
+                //             .to_string(),
+                //     );
+                //     return;
+                // }
 
-                sc.wait_for_retry();
+                // sc.wait_for_retry();
 
-                if sc.cancel.load(Ordering::SeqCst) || ds.disposing.load(Ordering::SeqCst) {
-                    return;
-                }
+                // if sc.cancel.load(Ordering::SeqCst) || ds.disposing.load(Ordering::SeqCst) {
+                //     return;
+                // }
 
-                if sc.connect(ds.clone(), true) == ConnectStatus::Canceled {
-                    return;
-                }
+                // if sc.connect(ds.clone(), true) == ConnectStatus::Canceled {
+                //     return;
+                // }
 
-                // Notify the user that reconnect attempt was completed.
-                sc.begin_callback_sync();
+                // // Notify the user that reconnect attempt was completed.
+                // sc.begin_callback_sync();
 
-                if !sc.cancel.load(Ordering::SeqCst) {
-                    (sc.reconnect_callback)(ds.clone());
-                }
+                // if !sc.cancel.load(Ordering::SeqCst) {
+                //     (sc.reconnect_callback)(ds.clone());
+                // }
 
-                sc.end_callback_sync();
+                // sc.end_callback_sync();
             }
         });
 
         let mut reconnect_thread_guard = self.reconnect_thread_mutex.lock().unwrap();
         *reconnect_thread_guard = Some(reconnect_thread);
-    }
-
-    fn reset_connection(&mut self) {
-        self.connect_attempt = 0;
-        self.connection_refused.store(false, Ordering::SeqCst);
     }
 
     // fn wait_for_retry(&self) {
@@ -325,5 +340,16 @@ impl SubscriberConnector {
         //     }
 
         ConnectStatus::Success
+    }
+
+    pub(crate) fn cancel(&self) {
+        self.cancel.store(true, Ordering::SeqCst);
+
+        // TODO: Implement
+    }
+
+    pub(crate) fn reset_connection(&mut self) {
+        self.connect_attempt = 0;
+        self.cancel.store(false, Ordering::SeqCst);
     }
 }
